@@ -1,6 +1,6 @@
 ! ===============================================================
 !
-! 2D matrix convolution    (>= Fortran 90)
+! 2D matrix convolution    (constant boundary, >= Fortran 90)
 !
 ! Execution: ./conv square_matrix_size num_of_convolutions
 !
@@ -32,35 +32,37 @@ PROGRAM convolution2D
 
     ! ------------------------------------------------
 
-    REAL, ALLOCATABLE, DIMENSION(:,:) :: A    ! matrix to be convolved
+    REAL, ALLOCATABLE, DIMENSION(:,:) :: A    ! 2D matrix to be convolved
     INTEGER :: matrix_size                    ! size of each matrix dimension
     INTEGER :: m,n                            ! # of rows and columns in matrix
     INTEGER :: num_convs                      ! # of convolutions
-    CHARACTER(len=10) :: arg                  ! command line argument
+    CHARACTER(len=10) :: arg1, arg2           ! command line arguments
     REAL :: start, finish
     
-    ! get matrix size from command line and allocate/initialize it
-    CALL get_command_argument(1, arg)
-    READ(arg,*) matrix_size
+    ! get command line arguments
+    CALL get_command_argument(1, arg1)   ! square matrix size
+    CALL get_command_argument(2, arg2)   ! # of convolutions
+    READ(arg1,*) matrix_size   
+    READ(arg2,*) num_convs
+    
+    ! set up the initial matrix
     m = matrix_size; n = matrix_size
     ALLOCATE(A(m,n))
     A  = 1
 
-    ! get # of convolutions from command line
-    CALL get_command_argument(2, arg)
-    READ(arg,*) num_convs
     PRINT *
     PRINT *, 'Number of convolutions: ', num_convs
 
     CALL cpu_time(start)
+    ! main body of work (convolution)
     CALL conv(A,num_convs)
-    call cpu_time(finish)
+    CALL cpu_time(finish)
     
     PRINT *    
     IF (matrix_size < 7) THEN 
         CALL print_matrix(A)
     ELSE
-        PRINT *,"Matrix too big to print out"
+        PRINT *,"Matrix too big to print to console"
     END IF 
 
     PRINT *
