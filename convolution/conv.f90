@@ -12,64 +12,64 @@
 !
 !=================================================================
 
-PROGRAM convolution2D
-    IMPLICIT NONE
+program convolution2D
+    implicit none
 
     ! ------------------------------------------------
     
-    INTERFACE
-         SUBROUTINE conv(C,M)
-            REAL, ALLOCATABLE, INTENT(INOUT) :: C(:,:)
-            INTEGER, INTENT(IN) :: M
-         END SUBROUTINE conv
-    END INTERFACE
+    interface
+         subroutine conv(C,M)
+            real, allocatable, intent(inout) :: C(:,:)
+            integer, intent(in) :: M
+         end subroutine conv
+    end interface
 
-    INTERFACE
-         SUBROUTINE print_matrix(C)
-            REAL, ALLOCATABLE, INTENT(IN) :: C(:,:)
-         END SUBROUTINE print_matrix
-    END INTERFACE 
+    interface
+         subroutine print_matrix(C)
+            real, allocatable, intent(in) :: C(:,:)
+         end subroutine print_matrix
+    end interface 
 
     ! ------------------------------------------------
 
-    REAL, ALLOCATABLE, DIMENSION(:,:) :: A    ! 2D matrix to be convolved
-    INTEGER :: matrix_size                    ! size of each matrix dimension
-    INTEGER :: m,n                            ! # of rows and columns in matrix
-    INTEGER :: num_convs                      ! # of convolutions
-    CHARACTER(len=10) :: arg1, arg2           ! command line arguments
-    REAL :: start, finish
+    real, allocatable, dimension(:,:) :: A    ! 2D matrix to be convolved
+    integer :: matrix_size                    ! size of each matrix dimension
+    integer :: m,n                            ! # of rows and columns in matrix
+    integer :: num_convs                      ! # of convolutions
+    character(len=10) :: arg1, arg2           ! command line arguments
+    real :: start, finish
     
     ! get command line arguments
-    CALL get_command_argument(1, arg1)   ! square matrix size
-    CALL get_command_argument(2, arg2)   ! # of convolutions
-    READ(arg1,*) matrix_size   
-    READ(arg2,*) num_convs
+    call get_command_argument(1, arg1)   ! square matrix size
+    call get_command_argument(2, arg2)   ! # of convolutions
+    read(arg1,*) matrix_size   
+    read(arg2,*) num_convs
     
-    ! set up the initial matrix
+    ! set up and initialize the initial matrix
     m = matrix_size; n = matrix_size
-    ALLOCATE(A(m,n))
+    allocate(A(m,n))
     A  = 1
 
-    PRINT *
-    PRINT *, 'Number of convolutions: ', num_convs
+    print *
+    print *, 'Number of convolutions: ', num_convs
 
-    CALL cpu_time(start)
+    call cpu_time(start)
     ! main body of work (convolution)
-    CALL conv(A,num_convs)
-    CALL cpu_time(finish)
+    call conv(A,num_convs)
+    call cpu_time(finish)
     
-    PRINT *    
-    IF (matrix_size < 7) THEN 
-        CALL print_matrix(A)
-    ELSE
-        PRINT *,"Matrix too big to print to console"
-    END IF 
+    print *    
+    if (matrix_size < 7) then 
+        call print_matrix(A)
+    else
+        print *,"Matrix too big to print to console"
+    end if 
 
-    PRINT *
-    PRINT '("Time = ",f6.3," seconds.")',finish-start    
-    PRINT *
+    print *
+    print '("Time = ",f6.3," seconds.")',finish-start    
+    print *
     
-END PROGRAM convolution2D
+end program convolution2D
 
 ! ===========================================================
 
@@ -78,26 +78,26 @@ END PROGRAM convolution2D
 !
 ! INPUT
 !       A         : 2D array to be convolved (source matrix)
-!       num_convs : # of convolutions to do (INTEGER)
+!       num_convs : # of convolutions to do (integer)
 !
-SUBROUTINE conv(A,num_convs)
-    IMPLICIT NONE
+subroutine conv(A,num_convs)
+    implicit none
 
-    REAL, ALLOCATABLE, INTENT(INOUT) :: A(:,:)
-    INTEGER, INTENT(IN) :: num_convs
+    real, allocatable, intent(inout) :: A(:,:)
+    integer, intent(in) :: num_convs
 
-    REAL, ALLOCATABLE :: B(:,:)  ! target matrix
+    real, allocatable :: B(:,:)  ! target matrix
     
-    INTEGER           :: row_lbound, row_ubound
-    INTEGER           :: col_lbound, col_ubound
-    INTEGER           :: i,j,k
+    integer           :: row_lbound, row_ubound
+    integer           :: col_lbound, col_ubound
+    integer           :: i,j,k
 
     ! get 2D array row/column index bounds
-    row_lbound = LBOUND(A,1); row_ubound = UBOUND(A,1)
-    col_lbound = LBOUND(A,2); col_ubound = UBOUND(A,2)
+    row_lbound = lbound(A,1); row_ubound = ubound(A,1)
+    col_lbound = lbound(A,2); col_ubound = ubound(A,2)
 
     ! set up target matrix
-    ALLOCATE( B(row_lbound:row_ubound, col_lbound:col_ubound) )
+    allocate( B(row_lbound:row_ubound, col_lbound:col_ubound) )
     B = A  ! to get constant boundary set up
 
     ! do convolutions
@@ -113,7 +113,7 @@ SUBROUTINE conv(A,num_convs)
         A = B  ! copy target matrix back to source matrix
     end do
 
-END SUBROUTINE conv
+end subroutine conv
 
 ! ===========================================================
 
@@ -123,20 +123,20 @@ END SUBROUTINE conv
 ! INPUT
 !       A : 2D array to be printed in row,column matrix format
 !
-SUBROUTINE print_matrix(A)
-    IMPLICIT NONE
+subroutine print_matrix(A)
+    implicit none
 
-    REAL, ALLOCATABLE, INTENT(IN)  :: A(:,:)
+    real, allocatable, intent(in)  :: A(:,:)
     
-    INTEGER           :: row_lbound, row_ubound
-    INTEGER           :: i
+    integer           :: row_lbound, row_ubound
+    integer           :: i
  
     ! get 2D array row index bound
-    row_lbound = LBOUND(A,1); row_ubound = UBOUND(A,1)
+    row_lbound = lbound(A,1); row_ubound = ubound(A,1)
 
     ! print the matrix a row at a time
     do i = row_lbound,row_ubound
-        PRINT *, A(i, :)
+        print *, A(i, :)
     end do
     
-END SUBROUTINE print_matrix
+end subroutine print_matrix
